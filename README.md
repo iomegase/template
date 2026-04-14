@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Starter Dashboard
 
-## Getting Started
+Reusable `Next.js` starter built from the official `shadcn/ui` dashboard block and refactored for a multi-area product foundation.
 
-First, run the development server:
+Current foundation:
+
+- public landing page and credentials sign-in
+- Auth.js credentials flow
+- explicit role routing for `super_admin`, `admin`, `customer`
+- protected route spaces: `/super-admin`, `/admin`, `/customer`
+- Prisma + PostgreSQL data layer
+- starter-ready settings and dashboard placeholders
+- optional Stripe billing module with guarded admin/customer routes
+
+## Stack
+
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Prisma + PostgreSQL
+- Auth.js / NextAuth-compatible auth flow
+- Zod
+
+## Roles
+
+- `super_admin`: platform owner
+- `admin`: project/site owner
+- `customer`: end user
+
+## Local setup
+
+Use Node `22.15.0+`.
+
+```bash
+nvm use 22.15.0
+npm install
+```
+
+Create your local env from [.env.example](/Users/daviddevillers/sites/starter-dashboard/.env.example:1) and set:
+
+- `DATABASE_URL`
+- `AUTH_SECRET`
+
+Optional billing module env:
+
+- `APP_URL`
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `STRIPE_PRICE_ID`
+
+If you use local Prisma Postgres:
+
+```bash
+npm run db:dev -- --detach
+npm run db:ls
+```
+
+Then update `DATABASE_URL` with the `prisma+postgres://...` value if needed.
+
+Prepare the database:
+
+```bash
+npm run db:generate
+npm run db:push
+npm run db:seed
+```
+
+Start the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+When `DATABASE_URL` points to a local `prisma+postgres://localhost/...` instance, `npm run dev`
+will start the Prisma local Postgres service automatically before booting Next.js.
+If you use a direct PostgreSQL URL instead, it skips that step.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/`
+- `/login`
+- `/dashboard`
 
-## Learn More
+## Demo credentials
 
-To learn more about Next.js, take a look at the following resources:
+The seed creates three local users:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `superadmin@example.com` / `Admin123!`
+- `admin@example.com` / `Admin123!`
+- `customer@example.com` / `Admin123!`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Route spaces
 
-## Deploy on Vercel
+- `/super-admin`
+- `/admin`
+- `/customer`
+- `/dashboard` redirects according to role
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Optional billing routes:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/admin/billing`
+- `/customer/billing`
+- `/api/webhooks/stripe`
+
+The billing module remains optional:
+
+- if `billingEnabled` is false in project settings, billing routes stay non-operational and explain why
+- if Stripe env is incomplete, the admin billing page shows the missing setup explicitly
+- customer billing remains hidden until portal access and billing activation are both ready
+
+## Notes
+
+- Local Prisma Postgres works reliably in this repo with `db push`.
+- `prisma migrate dev` may still be unreliable against the local `prisma dev` instance; use a direct Postgres instance if you want migration-first local development.
+- Stripe setup is intentionally isolated inside `src/features/billing` so the starter core keeps working without billing.
+- Product direction, implementation phases and internal guardrails are documented in [README-Codex-Pack.md](/Users/daviddevillers/sites/starter-dashboard/README-Codex-Pack.md:1), [Plan.md](/Users/daviddevillers/sites/starter-dashboard/Plan.md:1) and [AGENTS.md](/Users/daviddevillers/sites/starter-dashboard/AGENTS.md:1).

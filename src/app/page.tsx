@@ -1,65 +1,101 @@
-import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardAction,
+} from "@/components/ui/card";
+import { getOptionalSessionUser } from "@/features/auth/guards";
+import { dashboardRoute, loginRoute } from "@/features/auth/routes";
+import { cn } from "@/lib/utils";
+
+const roleCards = [
+  {
+    title: "Super-admin",
+    description: "Platform registry, module activation and project readiness.",
+  },
+  {
+    title: "Admin",
+    description: "Project-local operations, settings and future CRUD flows.",
+  },
+  {
+    title: "Customer",
+    description: "Personal dashboard area intentionally separated from admin space.",
+  },
+];
+
+export default async function HomePage() {
+  const user = await getOptionalSessionUser();
+
+  if (user) {
+    redirect(dashboardRoute);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="relative min-h-screen ">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute left-1/2 top-0 h-80 w-80 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-accent/10 blur-3xl" />
+      </div>
+      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center gap-12 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="max-w-3xl space-y-6">
+          <Badge variant="outline" className="bg-card/80">
+            starter-core foundation
+          </Badge>
+          <div className="space-y-4">
+            <h1 className="max-w-3xl text-4xl font-thin tracking-wide uppercase text-foreground sm:text-5xl">
+              Reusable Next.js dashboard starter built for admin, super-admin and customer workspaces.
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-lg">
+              This repository starts from the official shadcn/ui dashboard block
+              and refactors it into a reusable product base with Prisma, role
+              boundaries, protected routes and optional billing later.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={loginRoute}
+              className={cn(buttonVariants({ variant: "default", size: "lg" }))}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Open sign in
+            </Link>
+            <Link
+              href={loginRoute}
+              className={cn(buttonVariants({ variant: "outline", size: "lg" }))}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Use demo access
+            </Link>
+            <Link
+              href="/sejour/provence-autumn-retreat-2026"
+              className={cn(buttonVariants({ variant: "ghost", size: "lg" }))}
+            >
+              Preview booking funnel
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="grid gap-4 lg:grid-cols-3">
+          {roleCards.map((card) => (
+            <Card  key={card.title} className="border-border/70  shadow-sm backdrop-blur">
+              <CardHeader>
+                <CardTitle>{card.title}</CardTitle>
+                <CardDescription>{card.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                Shared shell, explicit authorization and starter-friendly naming
+                keep these areas adaptable without collapsing them into one route
+                space.
+              </CardContent>
+              <CardAction/>
+            </Card>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+    </main>
   );
 }
