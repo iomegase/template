@@ -1,4 +1,4 @@
-# Channel Manager — Design Spec
+ # Channel Manager — Design Spec
 **Date:** 2026-04-19  
 **Projet:** Transformation du template Next.js en PWA Channel Manager  
 **Statut:** Approuvé
@@ -81,6 +81,7 @@ model Workspace {
   properties       Property[]
   domain           CustomDomain?
   settings         WorkspaceSettings?
+  blogPosts        BlogPost[]
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
@@ -107,6 +108,9 @@ model Property {
   cleaningFee     Decimal         @default(0)
   depositAmount   Decimal         @default(0)
   minNights       Int             @default(1)
+  seoTitle        String?
+  seoDescription  String?
+  faqItems        Json?           // [{ question: "...", answer: "..." }]
   photos          PropertyPhoto[]
   amenities       PropertyAmenity[]
   calendarFeeds   CalendarFeed[]
@@ -222,13 +226,35 @@ model CustomDomain {
   createdAt   DateTime  @default(now())
 }
 
-enum PropertyType   { apartment house villa chalet studio loft other }
-enum PropertyStatus { draft active archived }
-enum OTASource      { airbnb booking vrbo homeaway manual }
-enum SyncStatus     { pending syncing synced error }
-enum BlockSource    { airbnb booking vrbo homeaway direct manual }
-enum MessageSender  { owner guest }
-enum DepositStatus  { none held released captured expired }
+model BlogPost {
+  id             String         @id @default(cuid())
+  workspaceId    String?        // null = article plateforme (super_admin)
+  workspace      Workspace?     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  authorId       String
+  author         User           @relation(fields: [authorId], references: [id])
+  title          String
+  slug           String
+  excerpt        String?
+  content        String         // HTML riche (éditeur WYSIWYG)
+  coverImageUrl  String?
+  status         BlogPostStatus @default(draft)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  tags           String[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  @@unique([workspaceId, slug])
+}
+
+enum PropertyType    { apartment house villa chalet studio loft other }
+enum PropertyStatus  { draft active archived }
+enum OTASource       { airbnb booking vrbo homeaway manual }
+enum SyncStatus      { pending syncing synced error }
+enum BlockSource     { airbnb booking vrbo homeaway direct manual }
+enum MessageSender   { owner guest }
+enum DepositStatus   { none held released captured expired }
+enum BlogPostStatus  { draft published archived }
 enum DirectBookingStatus {
   pending payment_pending paid cancelled refunded
 }
@@ -290,6 +316,23 @@ enum DirectBookingStatus {
 - Service Worker : cache offline des données de réservation
 - `@ducanh2912/next-pwa`
 - Prompt d'installation sur mobile
+
+#### `blog/`
+- CRUD articles pour super_admin (articles plateforme) et admin (articles workspace)
+- Éditeur rich text (TipTap ou Lexical)
+- Gestion des tags, image de couverture (upload R2), statut draft/published
+- Champs SEO par article : titre SEO, meta description
+- URL : `taplateforme.com/blog/[slug]` (super_admin) et `jean.taplateforme.com/blog/[slug]` (admin)
+- Sitemap automatique incluant les articles publiés
+
+#### `seo/`
+- `sitemap.xml` dynamique par workspace (logements + articles de blog)
+- `robots.txt` par workspace
+- Composant `<SeoHead>` : Open Graph, Twitter Card, meta title/description
+- JSON-LD structured data sur les pages logement (`LodgingBusiness`, `Accommodation`, `FAQPage`)
+- JSON-LD `LocalBusiness` sur la page d'accueil du workspace
+- Fil d'Ariane (Breadcrumbs) sur toutes les pages publiques
+- GEO : structure de contenu optimisée pour les moteurs IA (headings hiérarchiques, FAQ structurées, résumés explicites)
 
 ### Modules existants adaptés
 
@@ -367,10 +410,46 @@ Ce projet est trop large pour un seul plan d'implémentation. Ordre recommandé 
 | **G** | Domaines custom + Vercel API | Scale |
 | **H** | i18n + multi-devises | Scale |
 | **I** | PWA + service worker | Polish |
+| **J** | Blog (super_admin + admin) + SEO/GEO | Growth |
 
 ---
 
-## 11. Hors scope MVP
+## 11. SEO & GEO Strategy
+
+### SEO (Search Engine Optimization)
+
+**Super admin (taplateforme.com) :**
+- Blog pour cibler des requêtes génériques : "channel manager location vacances", "synchroniser Airbnb Booking", "créer site réservation directe"
+- Pages de destination par cas d'usage (villas, appartements, chalets)
+- Meta tags + Open Graph sur toutes les pages
+
+**Admin (jean.taplateforme.com) :**
+- Blog local pour cibler des requêtes de destination : "que faire à Nice en juillet", "activités autour du Mont Blanc"
+- Page logement optimisée avec title/description configurables
+- FAQ sur chaque logement (réponses aux questions fréquentes → featured snippets)
+- Structured data `LodgingBusiness` + `Accommodation` pour Rich Results Google
+
+**Technique :**
+- `sitemap.xml` dynamique (pages + logements + articles) soumis à Google Search Console
+- `robots.txt` configuré par workspace
+- URLs propres et canoniques (pas de duplicates)
+- Images optimisées avec `alt` text systématique (Next.js Image)
+- Core Web Vitals : LCP < 2.5s, CLS < 0.1 (Next.js SSR + R2 CDN)
+
+### GEO (Generative Engine Optimization)
+
+Optimiser pour ChatGPT, Perplexity, Google SGE, et autres moteurs IA :
+
+- **JSON-LD complet** : `LodgingBusiness`, `Accommodation`, `FAQPage`, `BreadcrumbList`, `LocalBusiness`
+- **Structure de contenu** : H1 > H2 > H3 hiérarchique, une idée par paragraphe
+- **FAQ structurées** : configurables par propriétaire sur chaque logement (Q&A explicites)
+- **Résumés explicites** : premier paragraphe de chaque page résume le contenu (utilisé par les IA pour extraire les réponses)
+- **Entités nommées** : ville, région, type de logement, équipements — répétés naturellement dans le contenu
+- **llms.txt** : fichier de contexte plateforme lisible par les LLMs (standard émergent)
+
+---
+
+## 12. Hors scope MVP
 
 - API officielles OTA (Airbnb Connect, Booking Connectivity) — après lancement
 - Signature électronique du bail — v2
