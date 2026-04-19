@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/client"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
 vi.mock("@/lib/prisma", () => ({
@@ -44,10 +45,10 @@ const mockProperty = {
   maxGuests: 8,
   bedrooms: 4,
   bathrooms: 2,
-  pricePerNight: 250,
+  pricePerNight: new Decimal(250),
   currency: "EUR",
-  cleaningFee: 80,
-  depositAmount: 500,
+  cleaningFee: new Decimal(80),
+  depositAmount: new Decimal(500),
   minNights: 3,
   seoTitle: null,
   seoDescription: null,
