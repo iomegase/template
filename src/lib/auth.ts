@@ -44,7 +44,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
-      if (token.id && (!token.role || token.projectSlug === undefined)) {
+      if (token.id && (!token.role || token.projectSlug === undefined || token.workspaceSlug === undefined)) {
         const dbUser = await getAuthenticatedUserById(String(token.id));
 
         if (dbUser) {

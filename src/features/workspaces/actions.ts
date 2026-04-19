@@ -45,7 +45,6 @@ export async function createWorkspaceAction(
 }
 
 export async function updateWorkspaceSettingsAction(
-  workspaceId: string,
   _prev: unknown,
   formData: FormData
 ) {
@@ -53,6 +52,9 @@ export async function updateWorkspaceSettingsAction(
   if (!session?.user?.id || session.user.role !== "admin") {
     return { error: "Non autorisé" }
   }
+
+  const workspace = await getWorkspaceByOwnerId(session.user.id)
+  if (!workspace) return { error: "Espace introuvable" }
 
   const parsed = updateWorkspaceSettingsSchema.safeParse({
     siteName: formData.get("siteName") || undefined,
@@ -63,7 +65,7 @@ export async function updateWorkspaceSettingsAction(
     return { error: parsed.error.issues[0]?.message ?? "Données invalides" }
   }
 
-  await updateWorkspaceSettings(workspaceId, parsed.data)
+  await updateWorkspaceSettings(workspace.id, parsed.data)
   revalidatePath(workspaceRoutes.dashboard)
   return { success: true }
 }
