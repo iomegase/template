@@ -80,6 +80,11 @@ enum SatisfactionSurveyStatus {
   submitted
 }
 
+enum WorkspaceStatus {
+  active
+  suspended
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -91,6 +96,9 @@ model User {
 
   projectId     String?
   project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  workspaceId   String?
+  workspace     Workspace? @relation("WorkspaceOwner")
 
   accounts      Account[]
   sessions      Session[]
@@ -150,6 +158,31 @@ model Project {
 
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+}
+
+model Workspace {
+  id          String            @id @default(cuid())
+  slug        String            @unique
+  name        String
+  ownerId     String            @unique
+  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  status      WorkspaceStatus   @default(active)
+  settings    WorkspaceSettings?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model WorkspaceSettings {
+  id              String    @id @default(cuid())
+  workspaceId     String    @unique
+  siteName        String?
+  primaryColor    String    @default("#6366f1")
+  logoUrl         String?
+  stripeAccountId String?
+  stripeOnboarded Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 }
 
 model ProjectSettings {

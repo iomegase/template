@@ -55,6 +55,8 @@ export async function getOptionalSessionUser(): Promise<AuthenticatedUser | null
     role: user.role,
     projectId: user.projectId ?? null,
     projectSlug: user.projectSlug ?? null,
+    workspaceId: user.workspaceId ?? null,
+    workspaceSlug: user.workspaceSlug ?? null,
   };
 }
 
