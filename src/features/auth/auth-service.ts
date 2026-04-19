@@ -15,6 +15,7 @@ function toAuthenticatedUser(user: {
   role: string;
   projectId: string | null;
   project: { slug: string } | null;
+  workspace: { id: string; slug: string } | null;
 }): AuthenticatedUser {
   return {
     id: user.id,
@@ -24,6 +25,8 @@ function toAuthenticatedUser(user: {
     role: isAppUserRole(user.role) ? user.role : "customer",
     projectId: user.projectId,
     projectSlug: user.project?.slug ?? null,
+    workspaceId: user.workspace?.id ?? null,
+    workspaceSlug: user.workspace?.slug ?? null,
   };
 }
 
@@ -41,6 +44,12 @@ export async function authenticateUser(credentials: unknown) {
     include: {
       project: {
         select: {
+          slug: true,
+        },
+      },
+      workspace: {
+        select: {
+          id: true,
           slug: true,
         },
       },
@@ -71,6 +80,12 @@ export async function getAuthenticatedUserById(id: string) {
     include: {
       project: {
         select: {
+          slug: true,
+        },
+      },
+      workspace: {
+        select: {
+          id: true,
           slug: true,
         },
       },

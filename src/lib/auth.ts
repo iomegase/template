@@ -39,6 +39,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.role = user.role;
         token.projectId = user.projectId;
         token.projectSlug = user.projectSlug;
+        token.workspaceId = user.workspaceId;
+        token.workspaceSlug = user.workspaceSlug;
         return token;
       }
 
@@ -49,6 +51,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.role = dbUser.role;
           token.projectId = dbUser.projectId;
           token.projectSlug = dbUser.projectSlug;
+          token.workspaceId = dbUser.workspaceId;
+          token.workspaceSlug = dbUser.workspaceSlug;
           token.name = dbUser.name ?? token.name;
           token.email = dbUser.email ?? token.email;
           token.picture = dbUser.image ?? token.picture;
@@ -67,6 +71,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           typeof token.projectId === "string" ? token.projectId : null;
         session.user.projectSlug =
           typeof token.projectSlug === "string" ? token.projectSlug : null;
+        session.user.workspaceId =
+          typeof token.workspaceId === "string" ? token.workspaceId : null;
+        session.user.workspaceSlug =
+          typeof token.workspaceSlug === "string" ? token.workspaceSlug : null;
         session.user.name = token.name ?? session.user.name;
         session.user.email = token.email ?? session.user.email;
         session.user.image =

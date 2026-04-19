@@ -10,6 +10,8 @@ export type AuthenticatedUser = {
   role: AppUserRole;
   projectId: string | null;
   projectSlug: string | null;
+  workspaceId: string | null;
+  workspaceSlug: string | null;
 };
 
 export const roleLabels: Record<AppUserRole, string> = {
