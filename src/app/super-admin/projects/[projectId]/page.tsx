@@ -299,7 +299,7 @@ export default async function SuperAdminProjectDetailPage({
                       ...billingIssues.guidance,
                     ].length > 0 ? (
                       [...billingIssues.checkout, ...billingIssues.portal, ...billingIssues.guidance].map(
-                        (issue) => <li key={issue}>{issue}</li>,
+                        (issue, i) => <li key={`${i}-${issue}`}>{issue}</li>,
                       )
                     ) : (
                       <li>No billing blockers detected.</li>
