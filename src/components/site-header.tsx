@@ -8,28 +8,34 @@ type SiteHeaderProps = {
   className?: string;
 };
 
-export function SiteHeader({
-  title,
-  description,
-  className,
-}: SiteHeaderProps) {
+export function SiteHeader({ title, description, className }: SiteHeaderProps) {
   return (
     <div
       className={cn(
-        "flex min-h-(--header-height) items-center gap-4 border-b border-white/6 bg-red-900/90 px-4 backdrop-blur-xl supports-backdrop-filter:bg-black/12",
+        "flex min-h-(--header-height) items-center gap-4 border-b border-border/40 bg-background/75 px-4 backdrop-blur-xl supports-backdrop-filter:bg-background/60",
         className,
       )}
     >
-      <SidebarTrigger className="shrink-0 rounded-full border border-white/10 bg-white/6 md:hidden" />
+      <SidebarTrigger className="shrink-0 rounded-md border border-border/50 bg-muted/40 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground md:hidden" />
+
       <div className="min-w-0 flex-1">
-        <p className="truncate text-base font-semibold text-foreground">{title}</p>
-        <p className="truncate text-sm text-muted-foreground">{description}</p>
+        <p className="truncate text-sm font-semibold tracking-tight text-foreground">
+          {title}
+        </p>
+        <p className="truncate text-xs text-muted-foreground">{description}</p>
       </div>
+
       <div className="hidden items-center gap-2 md:flex">
-        <Badge className="border-white/8 bg-white/6 text-foreground" variant="outline">
+        <Badge
+          variant="outline"
+          className="border-border/50 bg-muted/30 font-mono text-[10px] tracking-wide text-muted-foreground"
+        >
           Live workspace
         </Badge>
-        <Badge className="border-primary/25 bg-primary/12 text-primary-foreground" variant="outline">
+        <Badge
+          variant="outline"
+          className="border-primary/30 bg-primary/8 font-mono text-[10px] tracking-wide text-primary"
+        >
           Premium theme
         </Badge>
       </div>

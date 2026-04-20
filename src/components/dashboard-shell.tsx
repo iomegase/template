@@ -32,8 +32,8 @@ export function DashboardShell({
       className="bg-background"
       style={
         {
-          "--sidebar-width": "18rem",
-          "--header-height": "4.5rem",
+          "--sidebar-width": "17rem",
+          "--header-height": "4rem",
         } as CSSProperties
       }
     >
@@ -44,21 +44,40 @@ export function DashboardShell({
         user={user}
         variant="inset"
       />
-      <SidebarInset className="flex min-h-svh flex-col overflow-hidden border border-white/6 bg-transparent shadow-[0_30px_90px_rgba(0,0,0,0.32)]">
+      <SidebarInset className="relative flex min-h-svh flex-col overflow-hidden border border-border/30 bg-transparent shadow-[0_24px_80px_rgba(0,0,0,0.36)]">
+
+        {/* Warm editorial backdrop — amber top-left, sage bottom-right */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background: [
+              /* FA6900 vivid orange halo — top left */
+              "radial-gradient(ellipse 60% 50% at 0% 0%, oklch(0.67 0.20 46 / 0.07), transparent)",
+              /* 69D2E7 sky blue halo — bottom right */
+              "radial-gradient(ellipse 50% 40% at 100% 100%, oklch(0.80 0.092 207 / 0.06), transparent)",
+              "linear-gradient(180deg, var(--background) 0%, var(--background) 100%)",
+            ].join(","),
+          }}
+        />
+
         <SiteHeader
           title={title}
           description={description}
           className="px-4 md:px-6"
         />
+
         <div className="flex flex-1 flex-col">
-          <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(200,0,110,0.12),transparent_32%),radial-gradient(circle_at_left,rgba(134,143,92,0.12),transparent_24%),linear-gradient(180deg,rgba(17,17,14,0.98),rgba(10,10,8,1))]" />
           <main className="@container/main flex-1 p-4 md:p-6">
             <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
               {children}
             </div>
           </main>
-          <footer className="border-t border-white/6 px-4 py-4 text-xs text-muted-foreground md:px-6">
-            {brandName} starter workspace de
+
+          <footer className="border-t border-border/30 px-4 py-3 md:px-6">
+            <p className="font-mono text-[11px] tracking-wide text-muted-foreground/40">
+              {brandName} · starter workspace
+            </p>
           </footer>
         </div>
       </SidebarInset>
