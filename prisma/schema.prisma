@@ -85,6 +85,22 @@ enum WorkspaceStatus {
   suspended
 }
 
+enum PropertyType {
+  apartment
+  house
+  villa
+  chalet
+  studio
+  loft
+  other
+}
+
+enum PropertyStatus {
+  draft
+  active
+  archived
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -168,6 +184,7 @@ model Workspace {
   owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
   status      WorkspaceStatus   @default(active)
   settings    WorkspaceSettings?
+  properties  Property[]
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 }
@@ -183,6 +200,62 @@ model WorkspaceSettings {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model Property {
+  id             String            @id @default(cuid())
+  workspaceId    String
+  workspace      Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  slug           String
+  name           String
+  description    Json              @default("{}")
+  type           PropertyType
+  status         PropertyStatus    @default(draft)
+  address        String
+  city           String
+  country        String            @default("FR")
+  latitude       Float?
+  longitude      Float?
+  maxGuests      Int
+  bedrooms       Int
+  bathrooms      Int
+  pricePerNight  Decimal           @db.Decimal(10, 2)
+  currency       String            @default("EUR")
+  cleaningFee    Decimal           @default(0) @db.Decimal(10, 2)
+  depositAmount  Decimal           @default(0) @db.Decimal(10, 2)
+  minNights      Int               @default(1)
+  seoTitle       String?
+  seoDescription String?
+  faqItems       Json?
+  photos         PropertyPhoto[]
+  amenities      PropertyAmenity[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@unique([workspaceId, slug])
+  @@index([workspaceId, status])
+}
+
+model PropertyPhoto {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  url        String
+  caption    String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([propertyId, order])
+}
+
+model PropertyAmenity {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  key        String
+  createdAt  DateTime @default(now())
+
+  @@unique([propertyId, key])
 }
 
 model ProjectSettings {
