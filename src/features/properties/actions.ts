@@ -12,6 +12,8 @@ import {
   updateProperty,
   updatePropertyAmenities,
 } from "./service"
+import { getPropertyPhotos } from "./photo-service"
+import { deleteR2Object, extractR2Key } from "@/lib/r2"
 import { propertyRoutes } from "./routes"
 
 export async function createPropertyAction(
@@ -100,6 +102,16 @@ export async function deletePropertyAction(propertyId: string) {
 
   const workspace = await getWorkspaceByOwnerId(session.user.id)
   if (!workspace) return { error: "Espace introuvable" }
+
+  // Delete R2 photos before removing the property (cascade deletes DB rows but not R2 objects)
+  const photos = await getPropertyPhotos(propertyId)
+  await Promise.all(
+    photos.map((photo) =>
+      deleteR2Object(extractR2Key(photo.url)).catch(() => {
+        // Best-effort: don't fail the delete if R2 cleanup errors
+      })
+    )
+  )
 
   await deleteProperty(propertyId)
   redirect(propertyRoutes.list)

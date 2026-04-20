@@ -69,6 +69,12 @@ export async function isPropertySlugAvailable(
   return existing === null
 }
 
+/**
+ * Update a property. When updating descriptions, BOTH descriptionFr and
+ * descriptionEn must be provided together — passing only one will overwrite
+ * the other with an empty string. The PropertyForm always sends both fields,
+ * so this is safe in practice via the UI.
+ */
 export async function updateProperty(
   id: string,
   input: UpdatePropertyInput & { descriptionFr?: string; descriptionEn?: string }

@@ -20,7 +20,7 @@ export async function getPhotoUploadUrlAction(
   contentType: string
 ) {
   const session = await auth()
-  if (!session?.user?.id) return { error: "Non autorisé" }
+  if (!session?.user?.id || session.user.role !== "admin") return { error: "Non autorisé" }
 
   const workspace = await getWorkspaceByOwnerId(session.user.id)
   if (!workspace) return { error: "Espace introuvable" }
@@ -50,7 +50,7 @@ export async function savePhotoAction(
   caption?: string
 ) {
   const session = await auth()
-  if (!session?.user?.id) return { error: "Non autorisé" }
+  if (!session?.user?.id || session.user.role !== "admin") return { error: "Non autorisé" }
 
   const workspace = await getWorkspaceByOwnerId(session.user.id)
   if (!workspace) return { error: "Espace introuvable" }
@@ -67,7 +67,7 @@ export async function savePhotoAction(
 
 export async function deletePhotoAction(photoId: string, propertyId: string) {
   const session = await auth()
-  if (!session?.user?.id) return { error: "Non autorisé" }
+  if (!session?.user?.id || session.user.role !== "admin") return { error: "Non autorisé" }
 
   const workspace = await getWorkspaceByOwnerId(session.user.id)
   if (!workspace) return { error: "Espace introuvable" }
@@ -85,7 +85,7 @@ export async function reorderPhotosAction(
   orderedPhotoIds: string[]
 ) {
   const session = await auth()
-  if (!session?.user?.id) return { error: "Non autorisé" }
+  if (!session?.user?.id || session.user.role !== "admin") return { error: "Non autorisé" }
 
   const workspace = await getWorkspaceByOwnerId(session.user.id)
   if (!workspace) return { error: "Espace introuvable" }
