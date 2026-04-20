@@ -319,6 +319,7 @@ enum DirectBookingStatus {
 
 #### `blog/`
 - CRUD articles pour super_admin (articles plateforme) et admin (articles workspace)
+- Proposer l utilisation de l IA pour générer des articles (manuel ou avec IA) 
 - Éditeur rich text (TipTap ou Lexical)
 - Gestion des tags, image de couverture (upload R2), statut draft/published
 - Champs SEO par article : titre SEO, meta description

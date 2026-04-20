@@ -82,6 +82,59 @@ Do not introduce extra roles unless a validated business need requires it.
 
 ---
 
+## Public cible
+
+Ce starter est destiné à un **public féminin et féministe**.
+
+### Principes éditoriaux
+
+- Le ton est **direct, chaleureux et affirmé** — ni condescendant, ni corporate froid.
+- Éviter les clichés visuels "féminins" (rose pastel, fleurs, formes molles). L'esthétique est **moderne, élégante et éditoriale**.
+- Interface en **français** par défaut.
+
+---
+
+## Design system
+
+### Aesthetic direction — "Coastal Warmth"
+
+A warm editorial dark theme. Precise, intentional, and memorable — not generic AI-generated aesthetics.
+
+### Official color palette
+
+| Hex       | OKLch                    | Role                            |
+|-----------|--------------------------|----------------------------------|
+| `#FA6900` | oklch(0.67 0.20 46)      | **Primary** — vivid orange       |
+| `#F38630` | oklch(0.71 0.155 52)     | Primary alt / chart-5            |
+| `#E0E4CC` | oklch(0.91 0.038 113)    | Foreground / cream text          |
+| `#A7DBD8` | oklch(0.84 0.053 193)    | Muted foreground / teal soft     |
+| `#69D2E7` | oklch(0.80 0.092 207)    | **Accent** — sky blue            |
+
+Background (dark): near-black warm `oklch(0.12 0.006 50)`
+
+### Typography
+
+| Role            | Font            | Notes                                  |
+|-----------------|-----------------|----------------------------------------|
+| Display/heading | **Fraunces**    | Variable serif (axes: SOFT, WONK). Expressive, editorial. |
+| Body/UI         | **DM Sans**     | Clean, slightly geometric. More character than Inter. |
+| Mono/data       | **JetBrains Mono** | Labels, badges, code, technical data. |
+
+### Design rules
+
+- **Light mode par défaut** — fond crème `#E0E4CC` (oklch(0.94 0.032 113)). Le dark mode reste disponible via la classe `.dark` mais n'est pas forcé.
+- Fonts are loaded via `next/font/google` with CSS variable injection.
+- All color tokens use the **OKLch color space** for perceptual uniformity.
+- Border radius is `0.5rem` — precise, not rounded-toy.
+- Entrance animations use `cubic-bezier(0.16, 1, 0.3, 1)` — elastic ease-out.
+- Never use Inter, Roboto, Arial, Space Grotesk, or generic system fonts.
+- Never use purple-on-white gradients or generic shadcn default blue.
+- Primary accent (#FA6900 orange) is used for key CTAs, active states, decorative lines.
+- Sky blue (#69D2E7) is used for secondary accents and atmospheric halos.
+- Mono labels follow `text-[11px] font-medium uppercase tracking-[0.22em]` for eyebrows.
+
+---
+
 ## Dashboard rules
 
 - Use shadcn/ui primitives and blocks as the visual baseline.
